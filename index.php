@@ -17,7 +17,7 @@ use Kirby\Cms\App as Kirby;
 use Kirby\Filesystem\Dir as Dir;
 
 Kirby::plugin('microman/formblock', [
-    'options' => [ 
+    'options' => [
         'from_email' => 'no-reply@' . Kirby::instance()->environment()->host(),
         'placeholders' => FormBlueprint::getPlaceholders(),
         'honeypot_variants' => ["email", "name", "url", "tel", "given-name", "family-name", "street-address", "postal-code", "address-line2", "address-line1", "country-name", "language", "bday"],
@@ -25,9 +25,10 @@ Kirby::plugin('microman/formblock', [
         'disable_confirm' => false,
         'disable_notify' => false,
         'disable_html' => false,
+        'send_from_visitor_mail' => false,
         'dynamic_validation' => true
     ],
-    'templates' => [ 'formcontainer' => __DIR__ . "/templates/formcontainer.php" ],
+    'templates' => ['formcontainer' => __DIR__ . "/templates/formcontainer.php"],
     'blueprints' => [
         'blocks/form' => [
             'name' => 'form.block.fromfields',
@@ -46,7 +47,7 @@ Kirby::plugin('microman/formblock', [
         'page.update:before' => function ($page, $values, $strings) {
             $content = json_encode($values);
             foreach ($page->drafts()->template('formcontainer') as $container) {
-                if(!str_contains($content, $container->slug())) {
+                if (!str_contains($content, $container->slug())) {
                     $container->delete(true);
                 };
             }
@@ -68,7 +69,7 @@ Kirby::plugin('microman/formblock', [
         [
             'pattern' => 'form/validator',
             'method' => "POST",
-            'action'  => function () {
+            'action' => function () {
 
                 //Get Page
                 if ((get('page') ?? "site") === 'site') {
@@ -80,8 +81,8 @@ Kirby::plugin('microman/formblock', [
                 $rendered_page = page()->render();
                 preg_match('/\<\!--\[Startvalidation:' . get('id') . '\]--\>(.*?)\<\!--\[Endvalidation\]--\>/s', $rendered_page, $out);
                 return end($out);
-                    
-                
+
+
             }
         ]
     ],
@@ -89,7 +90,7 @@ Kirby::plugin('microman/formblock', [
         'routes' => [
             [
                 'pattern' => 'formblock',
-                'action' => function() {
+                'action' => function () {
                     $formRequest = new FormRequest($this->requestQuery());
                     return $formRequest->api($this->requestQuery());
                 }
@@ -105,6 +106,6 @@ Kirby::plugin('microman/formblock', [
     'translations' => [
         'en' => require __DIR__ . '/lib/languages/en.php',
         'de' => require __DIR__ . '/lib/languages/de.php',
-	    'lt' => require __DIR__ . '/lib/languages/lt.php'
+        'lt' => require __DIR__ . '/lib/languages/lt.php'
     ]
 ]);

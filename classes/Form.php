@@ -459,6 +459,12 @@ static function translate($key, $default, $replace = []) {
                 'attachments' => $this->attachments
             ];
 
+            if (option('microman.formblock.send_from_visitor_mail') === true) {
+                $emailData['from'] = $this->form_field('email', 'value');
+            } else {
+                $emailData['from'] = option('microman.formblock.from_email');
+            }
+
             if (option('microman.formblock.disable_html') === false) {
                 $emailData["body"]['html'] = $body;
             }
